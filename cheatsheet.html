@@ -28,11 +28,11 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+html, body { min-height: 100%; }
 body {
   font-family: var(--sans);
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
   overflow-x: hidden;
 }
 
@@ -192,6 +192,7 @@ nav {
   height: calc(100vh - 56px);
   overflow: hidden;
 }
+#page-practice:not(.active) { display: none; }
 .exercise-panel {
   background: var(--surface); border-right: 1px solid var(--border);
   overflow-y: auto; display: flex; flex-direction: column;
@@ -337,6 +338,7 @@ nav {
 .status-error { background: rgba(248,113,113,0.12); color: var(--red); }
 .status-correct { background: rgba(62,207,142,0.18); color: var(--green); border: 1px solid rgba(62,207,142,0.3); }
 .status-wrong { background: rgba(248,113,113,0.18); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.results-
 .results-body { flex: 1; overflow: auto; padding: 12px 16px; }
 .results-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
 .results-table th {
@@ -456,7 +458,7 @@ nav {
   font-size: 16px; flex-shrink: 0;
 }
 .cheat-card-title { font-family: var(--display); font-size: 15px; font-weight: 700; }
-.cheat-card-body { padding: 14px 18px; }
+.cheat-card-.problem-pane-inner { padding: 14px 18px; }
 .cheat-group { margin-bottom: 12px; }
 .cheat-group:last-child { margin-bottom: 0; }
 .cheat-group-label {
@@ -632,7 +634,7 @@ nav {
   border-top: 1px solid var(--border);
   background: var(--surface);
   padding: 40px 32px 32px;
-  margin-top: 60px;
+  margin-top: 0;
 }
 .footer-inner {
   max-width: 900px; margin: 0 auto;
@@ -672,11 +674,15 @@ nav {
   .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
   .site-footer { padding: 32px 16px 24px; margin-top: 32px; }
 }
+
+/* ── Sticky footer fix ── */
+html { height: 100%; }
+body { min-height: 100%; display: flex; flex-direction: column; }
+body > nav ~ div.page.active { flex: 1; }
+.site-footer { margin-top: auto; }
 </style>
 </head>
-
 <body>
-
 <nav>
   <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;user-select:none" title="Go home">SQL<span>Craft</span></div>
   <div class="nav-tabs" id="nav-tabs-desktop">
@@ -699,16 +705,14 @@ nav {
 </nav>
 <!-- Mobile drawer -->
 <div class="nav-drawer" id="nav-drawer">
-  <button class="drawer-tab" onclick="location.href='index.html'">Home</button>
-  <button class="drawer-tab" onclick="location.href='curriculum.html'">Curriculum</button>
-  <button class="drawer-tab" onclick="location.href='practice.html'">Practice</button>
-  <button class="drawer-tab active" onclick="location.href='cheatsheet.html'">Cheat Sheet</button>
-  <button class="drawer-tab" onclick="location.href='progress.html'">Progress</button>
-  <button class="drawer-tab" onclick="location.href='contact.html'">Contact</button>
+  <button class="drawer-tab" href='index.html' onclick="">Home</button>
+  <button class="drawer-tab" href='curriculum.html' onclick="">Curriculum</button>
+  <button class="drawer-tab" href='practice.html' onclick="">Practice</button>
+  <button class="drawer-tab active" href='cheatsheet.html' onclick="">Cheat Sheet</button>
+  <button class="drawer-tab" href='progress.html' onclick="">Progress</button>
+  <button class="drawer-tab" href='contact.html' onclick="">Contact</button>
   <div class="drawer-pill"><span class="count" id="nav-solved-mobile">0</span><span style="color:var(--muted)">/ 36 exercises solved</span></div>
 </div>
-
-
 <!-- CHEAT SHEET PAGE -->
 <div id="page-cheatsheet" class="page active">
   <div class="cheat-page">
@@ -717,9 +721,6 @@ nav {
     <div class="cheat-grid" id="cheat-grid"></div>
   </div>
 </div>
-
-
-
 <script>
 const DB_SQL = `
 CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, email TEXT, country TEXT, created_at TEXT);
@@ -1871,10 +1872,11 @@ function copySnippet(btn) {
 })();
 
 </script>
-
-
-<script>document.addEventListener("DOMContentLoaded",function(){renderCheatSheet();updateNav();});</script>
-
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  renderCheatSheet(); updateNav();
+});
+</script>
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-logo">SQL<span>Craft</span></div>
