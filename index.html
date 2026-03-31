@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQLCraft — Home</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+<style>
+:root {
+  --bg: #0c0e12;
+  --surface: #13161c;
+  --surface2: #1a1e27;
+  --surface3: #212636;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --accent: #4f9eff;
+  --accent2: #7c5cfc;
+  --green: #3ecf8e;
+  --red: #f87171;
+  --amber: #fbbf24;
+  --text: #e8eaf0;
+  --muted: #7a7f8e;
+  --faint: #3a3f50;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Syne', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  background: rgba(12,14,18,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 200;
+}
+.nav-logo { font-family: var(--display); font-weight: 800; font-size: 18px; letter-spacing: -0.5px; color: var(--text); flex-shrink: 0; }
+.nav-logo span { color: var(--accent); }
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab {
+  padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--muted); transition: all 0.15s;
+  border: none; background: none; white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text); background: var(--surface2); }
+.nav-tab.active { color: var(--text); background: var(--surface2); }
+.nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.progress-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: 99px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  font-size: 12px; font-weight: 500; white-space: nowrap;
+}
+.progress-pill .count { color: var(--green); }
+/* Hamburger */
+.nav-hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 36px; height: 36px; background: none; border: none; cursor: pointer;
+  padding: 6px; border-radius: 6px; transition: background 0.15s;
+}
+.nav-hamburger:hover { background: var(--surface2); }
+.nav-hamburger span { display: block; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.2s; }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+/* Mobile drawer */
+.nav-drawer {
+  display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
+  background: rgba(12,14,18,0.98); z-index: 190; flex-direction: column;
+  padding: 16px; gap: 6px; backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+}
+.nav-drawer.open { display: flex; }
+.drawer-tab {
+  padding: 14px 16px; border-radius: 10px; font-size: 16px; font-weight: 500;
+  cursor: pointer; color: var(--muted); transition: all 0.15s;
+  border: none; background: none; text-align: left; font-family: var(--sans);
+}
+.drawer-tab:hover, .drawer-tab.active { color: var(--text); background: var(--surface2); }
+.drawer-pill {
+  margin-top: auto; display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px; border-radius: 10px; background: var(--surface2);
+  border: 1px solid var(--border2); font-size: 13px; font-weight: 500;
+}
+.drawer-pill .count { color: var(--green); }
+
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
+
+/* HERO */
+.hero {
+  padding: 80px 32px 60px;
+  max-width: 900px; margin: 0 auto; text-align: center;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 14px; border-radius: 99px;
+  background: rgba(79,158,255,0.1); border: 1px solid rgba(79,158,255,0.2);
+  font-size: 12px; font-weight: 500; color: var(--accent); margin-bottom: 24px;
+  letter-spacing: 0.04em;
+}
+.hero h1 {
+  font-family: var(--display); font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800; line-height: 1.05; letter-spacing: -2px;
+  margin-bottom: 20px;
+}
+.hero h1 .hl { color: var(--accent); }
+.hero p { font-size: 18px; color: var(--muted); line-height: 1.6; max-width: 560px; margin: 0 auto 36px; font-weight: 300; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  background: var(--accent); color: #0c0e12; border: none; cursor: pointer;
+  transition: all 0.15s; font-family: var(--sans);
+}
+.btn-primary:hover { background: #6aafff; transform: translateY(-1px); }
+.btn-ghost {
+  padding: 12px 28px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  background: transparent; color: var(--text); border: 1px solid var(--border2); cursor: pointer;
+  transition: all 0.15s; font-family: var(--sans);
+}
+.btn-ghost:hover { background: var(--surface2); }
+
+/* STATS ROW */
+.stats-row {
+  display: flex; gap: 1px; max-width: 700px; margin: 0 auto 60px;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+}
+.stat-item {
+  flex: 1; background: var(--surface); padding: 20px 24px; text-align: center;
+}
+.stat-item:first-child { border-radius: 12px 0 0 12px; }
+.stat-item:last-child { border-radius: 0 12px 12px 0; }
+.stat-num { font-family: var(--display); font-size: 28px; font-weight: 700; color: var(--text); }
+.stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* CURRICULUM GRID */
+.section { padding: 0 32px 60px; max-width: 1100px; margin: 0 auto; }
+.section-title {
+  font-family: var(--display); font-size: 24px; font-weight: 700; letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+.section-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+.week-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.week-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 20px; cursor: pointer;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.week-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+}
+.week-card.ph1::before { background: var(--green); }
+.week-card.ph2::before { background: var(--accent); }
+.week-card.ph3::before { background: var(--amber); }
+.week-card.ph4::before { background: #f87171; }
+.week-card:hover { border-color: var(--border2); transform: translateY(-2px); background: var(--surface2); }
+.week-card.solved { border-color: rgba(62,207,142,0.25); }
+.wc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.wc-num { font-size: 11px; font-weight: 600; color: var(--muted); font-family: var(--mono); }
+.wc-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.badge-ph1 { background: rgba(62,207,142,0.12); color: var(--green); }
+.badge-ph2 { background: rgba(79,158,255,0.12); color: var(--accent); }
+.badge-ph3 { background: rgba(251,191,36,0.12); color: var(--amber); }
+.badge-ph4 { background: rgba(248,113,113,0.12); color: var(--red); }
+.wc-title { font-weight: 500; font-size: 14px; line-height: 1.4; margin-bottom: 8px; }
+.wc-meta { font-size: 12px; color: var(--muted); }
+.wc-done-badge {
+  position: absolute; top: 14px; right: 14px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--green); display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #0c0e12;
+}
+
+/* PRACTICE PAGE */
+.practice-layout {
+  display: grid; grid-template-columns: 300px 1fr;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+.exercise-panel {
+  background: var(--surface); border-right: 1px solid var(--border);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.ep-header {
+  padding: 16px 18px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--surface); z-index: 10;
+}
+.ep-header h3 { font-family: var(--display); font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.ep-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.filter-btn {
+  padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--border2); background: none; color: var(--muted); cursor: pointer;
+  transition: all 0.12s;
+}
+.filter-btn.active, .filter-btn:hover { background: var(--accent); color: #0c0e12; border-color: var(--accent); }
+.exercise-list { flex: 1; }
+.ex-item {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.12s; position: relative;
+}
+.ex-item:hover { background: var(--surface2); }
+.ex-item.active { background: var(--surface2); border-left: 2px solid var(--accent); }
+.ex-item.solved::after {
+  content: '✓'; position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%); color: var(--green); font-size: 12px; font-weight: 700;
+}
+.ex-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+.ex-meta { display: flex; gap: 8px; align-items: center; }
+.diff-dot { width: 6px; height: 6px; border-radius: 50%; }
+.diff-easy { background: var(--green); }
+.diff-medium { background: var(--amber); }
+.diff-hard { background: var(--red); }
+.diff-label { font-size: 11px; color: var(--muted); }
+.ex-topic { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+/* EDITOR AREA */
+.editor-area { display: flex; flex-direction: column; overflow: hidden; flex: 1; min-height: 0; }
+.problem-pane {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.problem-title { font-family: var(--display); font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.problem-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+.schema-section { margin-top: 12px; }
+.schema-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.schema-tables { display: flex; gap: 10px; flex-wrap: wrap; }
+.schema-table {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 14px; font-family: var(--mono); font-size: 12px;
+  min-width: 160px;
+}
+.st-name { font-weight: 600; color: var(--accent); margin-bottom: 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.st-field { color: var(--muted); line-height: 1.8; }
+.st-field span { color: var(--faint); font-size: 11px; margin-left: 4px; }
+
+/* CODE EDITOR */
+.code-section { display: flex; flex-direction: column; overflow: hidden; }
+.editor-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.toolbar-left { display: flex; align-items: center; gap: 10px; }
+.toolbar-label { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.run-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 6px; border: none;
+  background: var(--accent); color: #0c0e12; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; font-family: var(--sans);
+}
+.run-btn:hover { background: #6aafff; }
+.run-btn .run-icon { width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid #0c0e12; }
+.hint-btn {
+  padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border2);
+  background: none; color: var(--muted); font-size: 13px; cursor: pointer;
+  transition: all 0.15s; font-family: var(--sans);
+}
+.hint-btn:hover { background: var(--surface2); color: var(--text); }
+.reset-btn {
+  padding: 7px 14px; border-radius: 6px; border: 1px solid var(--border2);
+  background: none; color: var(--muted); font-size: 13px; cursor: pointer;
+  transition: all 0.15s; font-family: var(--sans);
+}
+.reset-btn:hover { background: var(--surface2); color: var(--text); }
+.editor-wrap { position: relative; overflow: hidden; flex: 1; min-height: 60px; }
+#sql-editor {
+  width: 100%; height: 100%;
+  background: #0d1117; color: #e6edf3;
+  font-family: var(--mono); font-size: 14px; line-height: 1.6;
+  border: none; outline: none; resize: none; padding: 20px;
+  tab-size: 2; caret-color: var(--accent);
+}
+.line-nums {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 40px;
+  background: #0d1117; border-right: 1px solid var(--border);
+  padding-top: 20px; text-align: right; padding-right: 8px;
+  font-family: var(--mono); font-size: 14px; line-height: 1.6;
+  color: #3d444d; user-select: none; pointer-events: none; overflow: hidden;
+}
+
+/* RESIZABLE SPLITTER */
+.editor-results-container {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0;
+}
+.drag-divider {
+  flex-shrink: 0; height: 8px; background: var(--surface);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  cursor: ns-resize; display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s; position: relative; z-index: 5;
+  user-select: none;
+}
+.drag-divider:hover, .drag-divider.dragging { background: var(--surface2); border-color: var(--accent); }
+.drag-divider-dots {
+  display: flex; gap: 3px; align-items: center; pointer-events: none;
+}
+.drag-divider-dots span {
+  display: block; width: 18px; height: 2px; border-radius: 1px;
+  background: var(--faint); transition: background 0.12s;
+}
+.drag-divider:hover .drag-divider-dots span,
+.drag-divider.dragging .drag-divider-dots span { background: var(--accent); }
+
+
+/* RESULTS */
+.results-pane {
+  border-top: none; background: var(--bg);
+  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+  min-height: 60px;
+}
+.results-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+}
+.results-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.result-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: 99px;
+}
+.result-row-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+.status-success { background: rgba(62,207,142,0.12); color: var(--green); }
+.status-error { background: rgba(248,113,113,0.12); color: var(--red); }
+.status-correct { background: rgba(62,207,142,0.18); color: var(--green); border: 1px solid rgba(62,207,142,0.3); }
+.status-wrong { background: rgba(248,113,113,0.18); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.results-body { flex: 1; overflow: auto; padding: 12px 16px; }
+.results-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+.results-table th {
+  background: var(--surface); color: var(--muted); font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 12px;
+  text-align: left; border-bottom: 1px solid var(--border2); white-space: nowrap;
+  position: sticky; top: 0; z-index: 1;
+}
+.results-table td {
+  padding: 5px 12px; border-bottom: 1px solid var(--border);
+  color: var(--text); white-space: nowrap;
+}
+.results-table tr:hover td { background: var(--surface); }
+.empty-state { color: var(--muted); font-size: 13px; text-align: center; padding: 30px; }
+.hint-box {
+  background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2);
+  border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--amber);
+  margin: 8px 16px; display: none; flex-shrink: 0;
+}
+.hint-box.show { display: block; }
+
+/* WEEK VIEW MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center; z-index: 200;
+  display: none; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 16px; width: 100%; max-width: 600px; max-height: 85vh;
+  overflow-y: auto; padding: 28px;
+}
+.modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-family: var(--display); font-size: 22px; font-weight: 700; }
+.modal-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 4px; line-height: 1; }
+.modal-close:hover { color: var(--text); }
+.topic-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.topic-row:last-child { border-bottom: none; }
+.topic-check { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--faint); flex-shrink: 0; margin-top: 2px; }
+.deliverable-box {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 14px 16px; margin-top: 16px;
+}
+.del-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.del-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.btn-solve { padding: 10px 20px; border-radius: 8px; background: var(--accent); color: #0c0e12; font-weight: 600; font-size: 14px; border: none; cursor: pointer; font-family: var(--sans); }
+.btn-mark { padding: 10px 20px; border-radius: 8px; background: none; color: var(--text); font-size: 14px; border: 1px solid var(--border2); cursor: pointer; font-family: var(--sans); }
+
+/* PROGRESS PAGE */
+.progress-page { padding: 32px; max-width: 900px; margin: 0 auto; }
+.prog-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+.prog-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+.prog-stat-val { font-family: var(--display); font-size: 32px; font-weight: 700; }
+.prog-stat-lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.phase-prog { margin-bottom: 24px; }
+.phase-prog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.phase-prog-name { font-weight: 500; font-size: 14px; }
+.phase-prog-pct { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.prog-bar-bg { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+.streak-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 24px; }
+.streak-title { font-family: var(--display); font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+.streak-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+.streak-dot { width: 100%; aspect-ratio: 1; border-radius: 3px; background: var(--surface2); }
+.streak-dot.done { background: var(--green); }
+.streak-dot.partial { background: rgba(62,207,142,0.35); }
+
+/* RESPONSIVE */
+@media (max-width: 860px) {
+  .nav-tabs { display: none; }
+  .nav-hamburger { display: flex; }
+  .progress-pill { display: none; }
+}
+@media (max-width: 768px) {
+  .practice-layout { grid-template-columns: 1fr; height: auto; }
+  .editor-area { min-height: 70vh; }
+  .exercise-panel { height: 240px; }
+  .prog-overview { grid-template-columns: repeat(2,1fr); }
+  .section { padding: 0 16px 40px; }
+  .hero { padding: 48px 16px 40px; }
+  .hero h1 { letter-spacing: -1px; }
+  .stats-row { flex-direction: column; background: none; gap: 8px; margin: 0 16px 40px; }
+  .stat-item { border-radius: 10px; }
+  .stat-item:first-child, .stat-item:last-child { border-radius: 10px; }
+  .week-grid { grid-template-columns: 1fr; }
+  .progress-page { padding: 16px; }
+  .prog-overview { gap: 8px; }
+  .modal { padding: 20px 16px; margin: 0; border-radius: 12px; }
+  .schema-tables { flex-direction: column; }
+  .results-pane { height: 180px; }
+  .editor-toolbar { flex-wrap: wrap; gap: 6px; }
+}
+@media (max-width: 480px) {
+  .prog-overview { grid-template-columns: 1fr 1fr; }
+  .hero p { font-size: 16px; }
+  .problem-pane { padding: 14px 14px; }
+}
+
+
+/* CHEAT SHEET */
+.cheat-page { padding: 32px; max-width: 1100px; margin: 0 auto; }
+.cheat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 24px; }
+.cheat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; transition: border-color 0.15s;
+}
+.cheat-card:hover { border-color: var(--border2); }
+.cheat-card-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+}
+.cheat-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.cheat-card-title { font-family: var(--display); font-size: 15px; font-weight: 700; }
+.cheat-card-body { padding: 14px 18px; }
+.cheat-group { margin-bottom: 12px; }
+.cheat-group:last-child { margin-bottom: 0; }
+.cheat-group-label {
+  font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
+}
+.cheat-items { display: flex; flex-wrap: wrap; gap: 5px; }
+.cheat-tag {
+  font-family: var(--mono); font-size: 12px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 5px; padding: 3px 8px; color: var(--text);
+  cursor: default; transition: all 0.12s;
+}
+.cheat-tag:hover { border-color: var(--accent); color: var(--accent); }
+.cheat-tag.hl { border-color: rgba(79,158,255,0.3); color: var(--accent); background: rgba(79,158,255,0.06); }
+.cheat-tag.green { border-color: rgba(62,207,142,0.3); color: var(--green); background: rgba(62,207,142,0.06); }
+.cheat-tag.amber { border-color: rgba(251,191,36,0.3); color: var(--amber); background: rgba(251,191,36,0.06); }
+.cheat-tag.red { border-color: rgba(248,113,113,0.3); color: var(--red); background: rgba(248,113,113,0.06); }
+.cheat-snippet {
+  font-family: var(--mono); font-size: 12px; line-height: 1.7;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-top: 6px;
+  color: var(--muted); white-space: pre; overflow-x: auto;
+}
+.cheat-snippet .kw { color: var(--accent); }
+.cheat-snippet .fn { color: var(--green); }
+.cheat-snippet .cm { color: var(--faint); }
+.cheat-copy-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--muted); background: none;
+  border: none; cursor: pointer; padding: 4px 0; margin-top: 6px;
+  font-family: var(--sans); transition: color 0.12s;
+}
+.cheat-copy-btn:hover { color: var(--accent); }
+.cheat-tip {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  border-left: 2px solid var(--faint); padding-left: 10px; margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .cheat-page { padding: 16px; }
+  .cheat-grid { grid-template-columns: 1fr; }
+}
+
+
+/* CONTACT PAGE */
+.contact-page { padding: 48px 32px 60px; max-width: 680px; margin: 0 auto; }
+.contact-hero { text-align: center; margin-bottom: 40px; }
+.contact-hero p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-top: 10px; }
+.contact-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; margin-bottom: 24px;
+}
+.contact-form-group { margin-bottom: 20px; }
+.contact-label {
+  display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+}
+.contact-input, .contact-select, .contact-textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px 14px; color: var(--text);
+  font-size: 14px; font-family: var(--sans); outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.contact-input:focus, .contact-select:focus, .contact-textarea:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,158,255,0.12);
+}
+.contact-input::placeholder, .contact-textarea::placeholder { color: var(--faint); }
+.contact-select { appearance: none; cursor: pointer; }
+.contact-select option { background: var(--surface2); }
+.contact-textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+.contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.contact-submit {
+  width: 100%; padding: 14px; border-radius: 10px; border: none;
+  background: var(--accent); color: #0c0e12; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; font-family: var(--sans);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.contact-submit:hover { background: #6aafff; transform: translateY(-1px); }
+.contact-submit:active { transform: translateY(0); }
+.contact-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.contact-success {
+  display: none; text-align: center; padding: 32px;
+  background: rgba(62,207,142,0.06); border: 1px solid rgba(62,207,142,0.2);
+  border-radius: 12px; margin-top: 16px;
+}
+.contact-success.show { display: block; }
+.contact-success-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(62,207,142,0.15); margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.contact-success h3 { font-family: var(--display); font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.contact-success p { font-size: 14px; color: var(--muted); }
+.contact-socials-row {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px;
+}
+.contact-social-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 10px;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500;
+  transition: all 0.15s;
+}
+.contact-social-btn:hover { border-color: var(--accent); color: var(--accent); }
+.contact-social-btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+.contact-info-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.contact-info-row:last-child { border-bottom: none; }
+.contact-info-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.contact-info-icon svg { width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 2; }
+.contact-info-label { font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.contact-info-val { color: var(--text); }
+.contact-info-val a { color: var(--accent); text-decoration: none; }
+.contact-info-val a:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  .contact-page { padding: 24px 16px 48px; }
+  .contact-card { padding: 20px 16px; }
+  .contact-row { grid-template-columns: 1fr; }
+}
+
+
+/* BUY ME A COFFEE */
+.bmc-section {
+  margin-top: 28px;
+  background: linear-gradient(135deg, rgba(255,213,0,0.06) 0%, rgba(255,213,0,0.02) 100%);
+  border: 1px solid rgba(255,213,0,0.18);
+  border-radius: 16px; padding: 24px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+}
+.bmc-left { display: flex; align-items: center; gap: 16px; }
+.bmc-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: #FFDD00; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; font-size: 24px;
+}
+.bmc-text h4 { font-family: var(--display); font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.bmc-text p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.bmc-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; border-radius: 10px; border: none;
+  background: #FFDD00; color: #1a1200;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  text-decoration: none; transition: all 0.15s;
+  font-family: var(--sans); white-space: nowrap; flex-shrink: 0;
+}
+.bmc-btn:hover { background: #ffe833; transform: translateY(-1px); }
+.bmc-btn:active { transform: translateY(0); }
+.bmc-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+/* Footer BMC link */
+.footer-bmc {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 18px; border-radius: 99px;
+  background: #FFDD00; color: #1a1200;
+  font-size: 13px; font-weight: 700; text-decoration: none;
+  transition: all 0.15s; margin-top: 4px;
+}
+.footer-bmc:hover { background: #ffe833; transform: translateY(-1px); }
+@media (max-width: 600px) {
+  .bmc-section { flex-direction: column; align-items: flex-start; padding: 20px; }
+  .bmc-btn { width: 100%; justify-content: center; }
+}
+
+/* FOOTER */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 40px 32px 32px;
+  margin-top: 60px;
+}
+.footer-inner {
+  max-width: 900px; margin: 0 auto;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+.footer-logo { font-family: var(--display); font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+.footer-logo span { color: var(--accent); }
+.footer-tagline { font-size: 13px; color: var(--muted); text-align: center; max-width: 360px; line-height: 1.6; }
+.footer-socials { display: flex; gap: 12px; align-items: center; }
+.social-link {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--muted); text-decoration: none;
+  transition: all 0.18s;
+}
+.social-link:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,158,255,0.08); transform: translateY(-2px); }
+.social-link svg { width: 18px; height: 18px; fill: currentColor; }
+.footer-divider { width: 100%; height: 1px; background: var(--border); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; font-size: 12px; color: var(--muted);
+}
+.footer-bottom a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(79,158,255,0.35);
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.footer-bottom a:hover {
+  color: #fff;
+  text-decoration-color: rgba(255,255,255,0.5);
+}
+@media (max-width: 600px) {
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+  .site-footer { padding: 32px 16px 24px; margin-top: 32px; }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;user-select:none" title="Go home">SQL<span>Craft</span></div>
+  <div class="nav-tabs" id="nav-tabs-desktop">
+    <button class="nav-tab active" onclick="location.href='index.html'">Home</button>
+    <button class="nav-tab" onclick="location.href='curriculum.html'">Curriculum</button>
+    <button class="nav-tab" onclick="location.href='practice.html'">Practice</button>
+    <button class="nav-tab" onclick="location.href='cheatsheet.html'">Cheat Sheet</button>
+    <button class="nav-tab" onclick="location.href='progress.html'">Progress</button>
+    <button class="nav-tab" onclick="location.href='contact.html'">Contact</button>
+  </div>
+  <div class="nav-right">
+    <div class="progress-pill" id="nav-pill-desktop">
+      <span class="count" id="nav-solved">0</span>
+      <span style="color:var(--muted)">/ 36</span>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<!-- Mobile drawer -->
+<div class="nav-drawer" id="nav-drawer">
+  <button class="drawer-tab active" onclick="location.href='index.html'">Home</button>
+  <button class="drawer-tab" onclick="location.href='curriculum.html'">Curriculum</button>
+  <button class="drawer-tab" onclick="location.href='practice.html'">Practice</button>
+  <button class="drawer-tab" onclick="location.href='cheatsheet.html'">Cheat Sheet</button>
+  <button class="drawer-tab" onclick="location.href='progress.html'">Progress</button>
+  <button class="drawer-tab" onclick="location.href='contact.html'">Contact</button>
+  <div class="drawer-pill"><span class="count" id="nav-solved-mobile">0</span><span style="color:var(--muted)">/ 36 exercises solved</span></div>
+</div>
+
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-tag">12-Week SQL Analyst Track</div>
+    <h1>Learn SQL.<br>Land the <span class="hl">analyst role.</span></h1>
+    <p>A structured, hands-on curriculum with a live SQL editor, auto-graded exercises, and a 12-week roadmap designed for aspiring data analysts.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('practice')">Start practicing</button>
+      <button class="btn-ghost" onclick="showPage('curriculum')">View curriculum</button>
+    </div>
+  </div>
+  <div class="stats-row" style="padding:0 32px">
+    <div class="stat-item"><div class="stat-num">36</div><div class="stat-lbl">SQL exercises</div></div>
+    <div class="stat-item"><div class="stat-num">12</div><div class="stat-lbl">Weekly modules</div></div>
+    <div class="stat-item"><div class="stat-num">4</div><div class="stat-lbl">Skill phases</div></div>
+    <div class="stat-item"><div class="stat-num">~84h</div><div class="stat-lbl">Total practice</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">The 4 phases</div>
+    <div class="section-sub">Every data analyst interview follows this exact progression</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;border-left:3px solid var(--green)">
+        <div style="font-size:11px;font-weight:600;color:var(--green);letter-spacing:.06em;margin-bottom:8px">PHASE 1 · WEEKS 1–4</div>
+        <div style="font-weight:600;margin-bottom:6px;font-size:15px">Foundations</div>
+        <div style="font-size:13px;color:var(--muted)">SELECT, WHERE, ORDER BY, GROUP BY, aggregates</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;border-left:3px solid var(--accent)">
+        <div style="font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.06em;margin-bottom:8px">PHASE 2 · WEEKS 5–8</div>
+        <div style="font-weight:600;margin-bottom:6px;font-size:15px">Core analyst skills</div>
+        <div style="font-size:13px;color:var(--muted)">JOINs, CASE WHEN, subqueries, date logic</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;border-left:3px solid var(--amber)">
+        <div style="font-size:11px;font-weight:600;color:var(--amber);letter-spacing:.06em;margin-bottom:8px">PHASE 3 · WEEKS 9–11</div>
+        <div style="font-weight:600;margin-bottom:6px;font-size:15px">Advanced SQL</div>
+        <div style="font-size:13px;color:var(--muted)">CTEs, window functions, performance basics</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;border-left:3px solid var(--red)">
+        <div style="font-size:11px;font-weight:600;color:var(--red);letter-spacing:.06em;margin-bottom:8px">PHASE 4 · WEEK 12</div>
+        <div style="font-weight:600;margin-bottom:6px;font-size:15px">Job ready</div>
+        <div style="font-size:13px;color:var(--muted)">Interview prep, portfolio, live coding</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+const DB_SQL = `
+CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, email TEXT, country TEXT, created_at TEXT);
+CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, category TEXT, price REAL, stock INTEGER);
+CREATE TABLE orders (id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, total REAL, status TEXT);
+CREATE TABLE order_items (id INTEGER PRIMARY KEY, order_id INTEGER, product_id INTEGER, qty INTEGER, unit_price REAL);
+CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary REAL, hire_date TEXT, manager_id INTEGER);
+CREATE TABLE sales (id INTEGER PRIMARY KEY, employee_id INTEGER, region TEXT, amount REAL, sale_date TEXT);
+
+INSERT INTO customers VALUES
+(1,'Alice Chen','alice@email.com','Australia','2023-01-15'),
+(2,'Bob Smith','bob@email.com','USA','2023-02-20'),
+(3,'Clara Diaz','clara@email.com','Spain','2023-01-08'),
+(4,'Dan Park','dan@email.com','Korea','2023-03-12'),
+(5,'Eva Mills','eva@email.com','Australia','2023-04-05'),
+(6,'Frank Lee','frank@email.com','USA','2023-05-18'),
+(7,'Grace Kim','grace@email.com','Korea','2023-06-22'),
+(8,'Henry Tan','henry@email.com','Singapore','2023-07-30'),
+(9,'Iris Wang','iris@email.com','Australia','2023-08-14'),
+(10,'Jack Brown','jack@email.com','UK','2022-12-01');
+
+INSERT INTO products VALUES
+(1,'Wireless Headphones','Electronics',89.99,45),
+(2,'Mechanical Keyboard','Electronics',129.99,30),
+(3,'Desk Lamp','Furniture',34.99,80),
+(4,'Coffee Mug','Kitchen',12.99,200),
+(5,'Notebook','Stationery',8.99,500),
+(6,'Monitor Stand','Furniture',59.99,25),
+(7,'USB Hub','Electronics',24.99,60),
+(8,'Standing Desk','Furniture',399.99,10),
+(9,'Pen Set','Stationery',15.99,300),
+(10,'Espresso Machine','Kitchen',249.99,15);
+
+INSERT INTO orders VALUES
+(1,1,'2024-01-05',119.98,'completed'),
+(2,2,'2024-01-08',89.99,'completed'),
+(3,1,'2024-01-12',34.99,'completed'),
+(4,3,'2024-01-15',259.98,'shipped'),
+(5,4,'2024-01-18',12.99,'completed'),
+(6,5,'2024-01-20',399.99,'completed'),
+(7,6,'2024-01-22',499.98,'processing'),
+(8,2,'2024-02-01',74.97,'completed'),
+(9,7,'2024-02-05',129.99,'completed'),
+(10,8,'2024-02-10',59.99,'completed'),
+(11,9,'2024-02-14',24.99,'shipped'),
+(12,10,'2024-02-18',249.99,'completed'),
+(13,1,'2024-03-01',64.97,'completed'),
+(14,3,'2024-03-08',399.99,'completed'),
+(15,5,'2024-03-15',89.99,'completed');
+
+INSERT INTO order_items VALUES
+(1,1,1,1,89.99),(2,1,4,2,12.99),(3,2,1,1,89.99),(4,3,3,1,34.99),
+(5,4,2,1,129.99),(6,4,7,2,24.99),(7,5,4,1,12.99),(8,6,8,1,399.99),
+(9,7,2,2,129.99),(10,7,7,1,24.99),(11,8,5,3,8.99),(12,8,4,1,12.99),
+(13,8,9,2,15.99),(14,9,2,1,129.99),(15,10,6,1,59.99),(16,11,7,1,24.99),
+(17,12,10,1,249.99),(18,13,5,2,8.99),(19,13,9,3,15.99),(20,14,8,1,399.99),
+(21,15,1,1,89.99);
+
+INSERT INTO employees VALUES
+(1,'Sarah Johnson','Sales',75000,'2020-03-15',NULL),
+(2,'Mike Torres','Engineering',95000,'2019-07-01',NULL),
+(3,'Amy Chen','Sales',68000,'2021-01-20',1),
+(4,'David Park','Engineering',110000,'2018-05-10',2),
+(5,'Lisa Wang','Marketing',72000,'2021-09-01',NULL),
+(6,'Tom Brown','Sales',62000,'2022-02-14',1),
+(7,'Nina Patel','Engineering',88000,'2020-11-30',2),
+(8,'Carlos Ruiz','Marketing',78000,'2019-04-22',5),
+(9,'Emma Wilson','Sales',71000,'2021-06-18',1),
+(10,'James Lee','Engineering',92000,'2020-08-05',2);
+
+INSERT INTO sales VALUES
+(1,3,'APAC',8500,'2024-01-10'),
+(2,6,'AMER',12000,'2024-01-12'),
+(3,9,'EMEA',9200,'2024-01-15'),
+(4,3,'APAC',7800,'2024-01-20'),
+(5,6,'AMER',15000,'2024-02-05'),
+(6,9,'EMEA',11000,'2024-02-08'),
+(7,3,'APAC',9500,'2024-02-12'),
+(8,6,'AMER',8200,'2024-02-18'),
+(9,9,'EMEA',13500,'2024-03-01'),
+(10,3,'APAC',11000,'2024-03-05'),
+(11,6,'AMER',9800,'2024-03-10'),
+(12,9,'EMEA',7600,'2024-03-15');
+`;
+
+const SCHEMA_INFO = {
+  customers: { fields: ['id INT', 'name TEXT', 'email TEXT', 'country TEXT', 'created_at TEXT'] },
+  products: { fields: ['id INT', 'name TEXT', 'category TEXT', 'price REAL', 'stock INT'] },
+  orders: { fields: ['id INT', 'customer_id INT', 'order_date TEXT', 'total REAL', 'status TEXT'] },
+  order_items: { fields: ['id INT', 'order_id INT', 'product_id INT', 'qty INT', 'unit_price REAL'] },
+  employees: { fields: ['id INT', 'name TEXT', 'department TEXT', 'salary REAL', 'hire_date TEXT', 'manager_id INT'] },
+  sales: { fields: ['id INT', 'employee_id INT', 'region TEXT', 'amount REAL', 'sale_date TEXT'] },
+};
+
+const exercises = [
+  { id:1, phase:1, week:1, title:'Select all customers', diff:'easy', topic:'SELECT',
+    desc:'Retrieve every column from the customers table.',
+    tables:['customers'],
+    starter:'SELECT * FROM customers;',
+    solution:'SELECT * FROM customers;',
+    hint:'Use SELECT * to get all columns, then FROM to specify the table.',
+    validate: r => r.length === 10 },
+
+  { id:2, phase:1, week:1, title:'Customer names and countries', diff:'easy', topic:'SELECT',
+    desc:'Get only the name and country columns from customers.',
+    tables:['customers'],
+    starter:'SELECT ',
+    solution:'SELECT name, country FROM customers;',
+    hint:'List the column names you want separated by commas after SELECT.',
+    validate: r => r.length===10 && r[0].hasOwnProperty('name') && r[0].hasOwnProperty('country') && !r[0].hasOwnProperty('email') },
+
+  { id:3, phase:1, week:1, title:'Australian customers only', diff:'easy', topic:'WHERE',
+    desc:'Find all customers who are from Australia.',
+    tables:['customers'],
+    starter:'SELECT * FROM customers\nWHERE ',
+    solution:"SELECT * FROM customers WHERE country = 'Australia';",
+    hint:"Use WHERE country = 'Australia' — text values need single quotes.",
+    validate: r => r.length===3 && r.every(x=>x.country==='Australia') },
+
+  { id:4, phase:1, week:2, title:'Products under $50', diff:'easy', topic:'WHERE',
+    desc:'List all products with a price less than 50.',
+    tables:['products'],
+    starter:'SELECT * FROM products\nWHERE ',
+    solution:'SELECT * FROM products WHERE price < 50;',
+    hint:'Compare price to a number using the < operator. Numbers do not need quotes.',
+    validate: r => r.length > 0 && r.every(x => x.price < 50) },
+
+  { id:5, phase:1, week:2, title:'Top 5 most expensive products', diff:'easy', topic:'ORDER BY',
+    desc:'Show the 5 most expensive products, most expensive first.',
+    tables:['products'],
+    starter:'SELECT name, price FROM products\n',
+    solution:'SELECT name, price FROM products ORDER BY price DESC LIMIT 5;',
+    hint:'ORDER BY price DESC sorts highest first. LIMIT 5 takes only 5 rows.',
+    validate: r => r.length===5 && r[0].price >= r[4].price },
+
+  { id:6, phase:1, week:2, title:'Completed orders', diff:'easy', topic:'WHERE',
+    desc:"Find all orders with status = 'completed'.",
+    tables:['orders'],
+    starter:'SELECT * FROM orders\nWHERE ',
+    solution:"SELECT * FROM orders WHERE status = 'completed';",
+    hint:"Filter on the status column using WHERE status = 'completed'.",
+    validate: r => r.length > 0 && r.every(x => x.status === 'completed') },
+
+  { id:7, phase:1, week:3, title:'Count total orders', diff:'easy', topic:'COUNT',
+    desc:'How many orders are in the orders table?',
+    tables:['orders'],
+    starter:'SELECT ',
+    solution:'SELECT COUNT(*) AS total_orders FROM orders;',
+    hint:'COUNT(*) counts all rows. Use AS to give the result column a name.',
+    validate: r => r.length===1 && Object.values(r[0])[0]===15 },
+
+  { id:8, phase:1, week:3, title:'Orders per customer', diff:'easy', topic:'GROUP BY',
+    desc:'Count how many orders each customer has placed.',
+    tables:['orders'],
+    starter:'SELECT customer_id, COUNT(*) AS order_count\nFROM orders\n',
+    solution:'SELECT customer_id, COUNT(*) AS order_count FROM orders GROUP BY customer_id ORDER BY order_count DESC;',
+    hint:'GROUP BY customer_id groups rows by each customer. Use COUNT(*) to count within each group.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('order_count')) },
+
+  { id:9, phase:1, week:3, title:'Revenue by product category', diff:'medium', topic:'GROUP BY',
+    desc:'Calculate the total revenue (sum of price × stock) for each product category.',
+    tables:['products'],
+    starter:'SELECT category, \nFROM products\nGROUP BY ',
+    solution:'SELECT category, SUM(price * stock) AS total_value FROM products GROUP BY category ORDER BY total_value DESC;',
+    hint:'Multiply price * stock to get value per product. SUM() it grouped by category.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('category')) },
+
+  { id:10, phase:1, week:3, title:'Average salary by department', diff:'medium', topic:'AVG',
+    desc:'Find the average salary for each department in the employees table.',
+    tables:['employees'],
+    starter:'SELECT department, \nFROM employees\nGROUP BY ',
+    solution:'SELECT department, AVG(salary) AS avg_salary FROM employees GROUP BY department ORDER BY avg_salary DESC;',
+    hint:'Use AVG(salary) and GROUP BY department.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('avg_salary')) },
+
+  { id:11, phase:1, week:3, title:'High-value departments', diff:'medium', topic:'HAVING',
+    desc:'Show only departments where the average salary exceeds 80,000.',
+    tables:['employees'],
+    starter:'SELECT department, AVG(salary) AS avg_salary\nFROM employees\nGROUP BY department\n',
+    solution:'SELECT department, AVG(salary) AS avg_salary FROM employees GROUP BY department HAVING AVG(salary) > 80000;',
+    hint:'HAVING filters after GROUP BY. Use HAVING AVG(salary) > 80000.',
+    validate: r => r.length > 0 && r.every(x => x.avg_salary > 80000) },
+
+  { id:12, phase:1, week:4, title:'Products with low stock', diff:'easy', topic:'WHERE',
+    desc:'Find all products where stock is less than 30. Show name, category, and stock.',
+    tables:['products'],
+    starter:'SELECT name, category, stock\nFROM products\nWHERE ',
+    solution:'SELECT name, category, stock FROM products WHERE stock < 30 ORDER BY stock;',
+    hint:'Filter with WHERE stock < 30.',
+    validate: r => r.length > 0 && r.every(x => x.stock < 30) },
+
+  { id:13, phase:2, week:5, title:'Orders with customer names', diff:'medium', topic:'JOIN',
+    desc:'Show each order with the customer name. Include order id, order date, total, and customer name.',
+    tables:['orders','customers'],
+    starter:'SELECT o.id, o.order_date, o.total, c.name\nFROM orders o\n',
+    solution:'SELECT o.id, o.order_date, o.total, c.name FROM orders o INNER JOIN customers c ON o.customer_id = c.id ORDER BY o.order_date;',
+    hint:'INNER JOIN customers c ON o.customer_id = c.id links the two tables.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('name')) },
+
+  { id:14, phase:2, week:5, title:'Customers with no orders', diff:'medium', topic:'LEFT JOIN',
+    desc:'Find customers who have never placed an order.',
+    tables:['customers','orders'],
+    starter:'SELECT c.name, c.email\nFROM customers c\n',
+    solution:'SELECT c.name, c.email FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL;',
+    hint:'LEFT JOIN keeps all customers. WHERE o.id IS NULL finds those with no matching order.',
+    validate: r => r.length > 0 },
+
+  { id:15, phase:2, week:5, title:'Order item details', diff:'medium', topic:'JOIN',
+    desc:'Show each order item with the product name and category.',
+    tables:['order_items','products'],
+    starter:'SELECT oi.order_id, p.name, p.category, oi.qty, oi.unit_price\nFROM order_items oi\n',
+    solution:'SELECT oi.order_id, p.name, p.category, oi.qty, oi.unit_price FROM order_items oi INNER JOIN products p ON oi.product_id = p.id;',
+    hint:'JOIN products p ON oi.product_id = p.id.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('name') && x.hasOwnProperty('category')) },
+
+  { id:16, phase:2, week:5, title:'Top customers by spend', diff:'medium', topic:'JOIN',
+    desc:'List the top 5 customers ranked by total amount spent. Show customer name and total spend.',
+    tables:['customers','orders'],
+    starter:'SELECT c.name, SUM(o.total) AS total_spend\nFROM customers c\nJOIN orders o ON c.id = o.customer_id\n',
+    solution:'SELECT c.name, SUM(o.total) AS total_spend FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;',
+    hint:'GROUP BY c.id, c.name and SUM(o.total), then ORDER BY total_spend DESC LIMIT 5.',
+    validate: r => r.length === 5 },
+
+  { id:17, phase:2, week:6, title:'Categorise products by price', diff:'medium', topic:'CASE WHEN',
+    desc:"Label each product as 'Budget' (< $25), 'Mid-range' ($25–$100), or 'Premium' (> $100).",
+    tables:['products'],
+    starter:"SELECT name, price,\n  CASE\n    WHEN price < 25 THEN 'Budget'\n    \n  END AS price_tier\nFROM products;",
+    solution:"SELECT name, price, CASE WHEN price < 25 THEN 'Budget' WHEN price <= 100 THEN 'Mid-range' ELSE 'Premium' END AS price_tier FROM products ORDER BY price;",
+    hint:"Add WHEN price <= 100 THEN 'Mid-range' and ELSE 'Premium' to your CASE expression.",
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('price_tier')) },
+
+  { id:18, phase:2, week:6, title:'Orders by month', diff:'medium', topic:'DATE',
+    desc:'Count orders per month. Show the month number and order count.',
+    tables:['orders'],
+    starter:"SELECT strftime('%m', order_date) AS month,\n  COUNT(*) AS order_count\nFROM orders\n",
+    solution:"SELECT strftime('%m', order_date) AS month, COUNT(*) AS order_count FROM orders GROUP BY month ORDER BY month;",
+    hint:"Use GROUP BY month to group by the extracted month.",
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('order_count')) },
+
+  { id:19, phase:2, week:6, title:'Employee salary bands', diff:'medium', topic:'CASE WHEN',
+    desc:"Classify employees as 'Junior' (salary < 75k), 'Mid' (75k–90k), or 'Senior' (> 90k). Show name, salary, band.",
+    tables:['employees'],
+    starter:'SELECT name, salary,\n  CASE\n    WHEN salary < 75000 THEN \'Junior\'\n    \n  END AS band\nFROM employees;',
+    solution:"SELECT name, salary, CASE WHEN salary < 75000 THEN 'Junior' WHEN salary <= 90000 THEN 'Mid' ELSE 'Senior' END AS band FROM employees ORDER BY salary;",
+    hint:"Add WHEN salary <= 90000 THEN 'Mid' and ELSE 'Senior'.",
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('band')) },
+
+  { id:20, phase:2, week:7, title:'Customers who spent above average', diff:'medium', topic:'Subquery',
+    desc:'Find customers whose total spend is above the average order total.',
+    tables:['customers','orders'],
+    starter:'SELECT c.name, SUM(o.total) AS total_spend\nFROM customers c\nJOIN orders o ON c.id = o.customer_id\nGROUP BY c.id, c.name\nHAVING total_spend > ',
+    solution:'SELECT c.name, SUM(o.total) AS total_spend FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name HAVING total_spend > (SELECT AVG(total) FROM orders);',
+    hint:'Use (SELECT AVG(total) FROM orders) as the value to compare against in HAVING.',
+    validate: r => r.length > 0 },
+
+  { id:21, phase:2, week:7, title:'Most popular product category', diff:'medium', topic:'Subquery',
+    desc:'Find the product category that appears most often in order_items (by total qty sold).',
+    tables:['order_items','products'],
+    starter:'SELECT p.category, SUM(oi.qty) AS total_qty\nFROM order_items oi\nJOIN products p ON oi.product_id = p.id\nGROUP BY p.category\n',
+    solution:'SELECT p.category, SUM(oi.qty) AS total_qty FROM order_items oi JOIN products p ON oi.product_id = p.id GROUP BY p.category ORDER BY total_qty DESC LIMIT 1;',
+    hint:'ORDER BY total_qty DESC LIMIT 1 gives the top category.',
+    validate: r => r.length === 1 },
+
+  { id:22, phase:2, week:7, title:'Sales above team average', diff:'hard', topic:'Subquery',
+    desc:'Show each sale where the amount exceeds the average for that region.',
+    tables:['sales'],
+    starter:'SELECT s1.region, s1.amount, s1.sale_date\nFROM sales s1\nWHERE s1.amount > (\n  \n);',
+    solution:'SELECT s1.region, s1.amount, s1.sale_date FROM sales s1 WHERE s1.amount > (SELECT AVG(s2.amount) FROM sales s2 WHERE s2.region = s1.region) ORDER BY s1.region, s1.amount DESC;',
+    hint:'Use a correlated subquery: SELECT AVG(s2.amount) FROM sales s2 WHERE s2.region = s1.region',
+    validate: r => r.length > 0 },
+
+  { id:23, phase:2, week:8, title:'Three-table join', diff:'hard', topic:'JOIN',
+    desc:'Show each order with customer name, product names, and quantities. Join customers, orders, order_items, and products.',
+    tables:['customers','orders','order_items','products'],
+    starter:'SELECT c.name AS customer, p.name AS product, oi.qty\nFROM orders o\n',
+    solution:'SELECT c.name AS customer, p.name AS product, oi.qty FROM orders o JOIN customers c ON o.customer_id = c.id JOIN order_items oi ON oi.order_id = o.id JOIN products p ON oi.product_id = p.id ORDER BY c.name;',
+    hint:'Chain three JOINs: orders → customers, orders → order_items → products.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('customer') && x.hasOwnProperty('product')) },
+
+  { id:24, phase:2, week:8, title:'Employee and their manager', diff:'medium', topic:'SELF JOIN',
+    desc:'Show each employee with their manager name. Employees without a manager should still appear.',
+    tables:['employees'],
+    starter:'SELECT e.name AS employee, m.name AS manager\nFROM employees e\n',
+    solution:'SELECT e.name AS employee, m.name AS manager FROM employees e LEFT JOIN employees m ON e.manager_id = m.id ORDER BY manager NULLS LAST;',
+    hint:'LEFT JOIN employees m ON e.manager_id = m.id. Use LEFT JOIN so employees with no manager still show.',
+    validate: r => r.length === 10 },
+
+  { id:25, phase:3, week:9, title:'Top 3 products per category', diff:'hard', topic:'CTE',
+    desc:'Using a CTE, find the top 3 most expensive products in each category.',
+    tables:['products'],
+    starter:'WITH ranked AS (\n  SELECT name, category, price,\n    ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) AS rn\n  FROM products\n)\nSELECT ',
+    solution:'WITH ranked AS (SELECT name, category, price, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) AS rn FROM products) SELECT name, category, price FROM ranked WHERE rn <= 3 ORDER BY category, price DESC;',
+    hint:'Filter the CTE result with WHERE rn <= 3.',
+    validate: r => r.length > 0 },
+
+  { id:26, phase:3, week:9, title:'Monthly sales summary CTE', diff:'hard', topic:'CTE',
+    desc:'Use a CTE to compute total sales per month, then show months where total exceeded 20,000.',
+    tables:['sales'],
+    starter:"WITH monthly AS (\n  SELECT strftime('%Y-%m', sale_date) AS month,\n    SUM(amount) AS total\n  FROM sales\n  GROUP BY month\n)\nSELECT ",
+    solution:"WITH monthly AS (SELECT strftime('%Y-%m', sale_date) AS month, SUM(amount) AS total FROM sales GROUP BY month) SELECT month, total FROM monthly WHERE total > 20000 ORDER BY month;",
+    hint:'Query the CTE with SELECT month, total FROM monthly WHERE total > 20000.',
+    validate: r => r.length >= 0 },
+
+  { id:27, phase:3, week:10, title:'Rank employees by salary', diff:'medium', topic:'Window',
+    desc:'Add a rank to each employee based on salary (highest = rank 1). Show name, salary, and rank.',
+    tables:['employees'],
+    starter:'SELECT name, salary,\n  RANK() OVER (ORDER BY salary DESC) AS salary_rank\nFROM employees\n',
+    solution:'SELECT name, salary, RANK() OVER (ORDER BY salary DESC) AS salary_rank FROM employees ORDER BY salary_rank;',
+    hint:'RANK() OVER (ORDER BY salary DESC) assigns rank 1 to the highest salary.',
+    validate: r => r.length === 10 && r[0].salary_rank === 1 },
+
+  { id:28, phase:3, week:10, title:'Running total of sales', diff:'hard', topic:'Window',
+    desc:'Show each sale with a running total of amount ordered by date.',
+    tables:['sales'],
+    starter:'SELECT sale_date, amount,\n  SUM(amount) OVER (ORDER BY sale_date) AS running_total\nFROM sales\n',
+    solution:'SELECT sale_date, amount, SUM(amount) OVER (ORDER BY sale_date) AS running_total FROM sales ORDER BY sale_date;',
+    hint:'SUM(amount) OVER (ORDER BY sale_date) accumulates amount as dates progress.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('running_total')) },
+
+  { id:29, phase:3, week:10, title:'Compare each sale to previous', diff:'hard', topic:'Window',
+    desc:'Show each sale with the previous sale amount (LAG) and the difference.',
+    tables:['sales'],
+    starter:'SELECT employee_id, sale_date, amount,\n  LAG(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS prev_sale,\n  \nFROM sales;',
+    solution:'SELECT employee_id, sale_date, amount, LAG(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS prev_sale, amount - LAG(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS diff FROM sales ORDER BY employee_id, sale_date;',
+    hint:'Subtract LAG(amount) OVER (...) from amount to get the difference.',
+    validate: r => r.length > 0 },
+
+  { id:30, phase:3, week:10, title:'Top seller per region', diff:'hard', topic:'Window',
+    desc:'Find the employee with the highest total sales in each region.',
+    tables:['sales','employees'],
+    starter:'WITH totals AS (\n  SELECT e.name, s.region, SUM(s.amount) AS total,\n    RANK() OVER (PARTITION BY s.region ORDER BY SUM(s.amount) DESC) AS rk\n  FROM sales s\n  JOIN employees e ON s.employee_id = e.id\n  GROUP BY e.name, s.region\n)\nSELECT ',
+    solution:'WITH totals AS (SELECT e.name, s.region, SUM(s.amount) AS total, RANK() OVER (PARTITION BY s.region ORDER BY SUM(s.amount) DESC) AS rk FROM sales s JOIN employees e ON s.employee_id = e.id GROUP BY e.name, s.region) SELECT name, region, total FROM totals WHERE rk = 1 ORDER BY region;',
+    hint:'Filter WHERE rk = 1 from the CTE to get only the top-ranked per region.',
+    validate: r => r.length > 0 },
+
+  { id:31, phase:3, week:11, title:'Products never ordered', diff:'medium', topic:'JOIN',
+    desc:'Find products that appear in no orders (never appear in order_items).',
+    tables:['products','order_items'],
+    starter:'SELECT p.name, p.category\nFROM products p\n',
+    solution:'SELECT p.name, p.category FROM products p LEFT JOIN order_items oi ON p.id = oi.product_id WHERE oi.id IS NULL;',
+    hint:'LEFT JOIN order_items and filter WHERE oi.id IS NULL.',
+    validate: r => r.length > 0 },
+
+  { id:32, phase:3, week:11, title:'Department headcount and payroll', diff:'medium', topic:'GROUP BY',
+    desc:'For each department, show headcount, total payroll, and average salary rounded to 2 decimal places.',
+    tables:['employees'],
+    starter:'SELECT department,\n  COUNT(*) AS headcount,\n  \nFROM employees\nGROUP BY department;',
+    solution:'SELECT department, COUNT(*) AS headcount, SUM(salary) AS total_payroll, ROUND(AVG(salary),2) AS avg_salary FROM employees GROUP BY department ORDER BY total_payroll DESC;',
+    hint:'Use SUM(salary) for total_payroll and ROUND(AVG(salary),2) for avg_salary.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('headcount') && x.hasOwnProperty('avg_salary')) },
+
+  { id:33, phase:3, week:11, title:'UNION: all product and employee names', diff:'medium', topic:'UNION',
+    desc:"Combine all product names (type='product') and employee names (type='employee') into one list.",
+    tables:['products','employees'],
+    starter:"SELECT name, 'product' AS type FROM products\n",
+    solution:"SELECT name, 'product' AS type FROM products UNION ALL SELECT name, 'employee' AS type FROM employees ORDER BY type, name;",
+    hint:"Use UNION ALL to combine both SELECTs. The second SELECT must have the same columns.",
+    validate: r => r.length === 20 },
+
+  { id:34, phase:4, week:12, title:'Customer lifetime value', diff:'hard', topic:'Analytics',
+    desc:'For each customer, compute: total orders, total spend, average order value, and first order date. Order by total spend descending.',
+    tables:['customers','orders'],
+    starter:'SELECT c.name,\n  COUNT(o.id) AS total_orders,\n  \nFROM customers c\nJOIN orders o ON c.id = o.customer_id\nGROUP BY c.id, c.name\nORDER BY total_spend DESC;',
+    solution:'SELECT c.name, COUNT(o.id) AS total_orders, ROUND(SUM(o.total),2) AS total_spend, ROUND(AVG(o.total),2) AS avg_order_value, MIN(o.order_date) AS first_order FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY total_spend DESC;',
+    hint:'Use SUM, AVG, MIN on order columns, grouped by customer.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('total_orders') && x.hasOwnProperty('total_spend')) },
+
+  { id:35, phase:4, week:12, title:'Month-over-month sales growth', diff:'hard', topic:'Analytics',
+    desc:'Calculate monthly total sales and the percentage change from the prior month.',
+    tables:['sales'],
+    starter:"WITH monthly AS (\n  SELECT strftime('%Y-%m', sale_date) AS month, SUM(amount) AS total\n  FROM sales GROUP BY month\n)\nSELECT month, total,\n  LAG(total) OVER (ORDER BY month) AS prev_total,\n  \nFROM monthly;",
+    solution:"WITH monthly AS (SELECT strftime('%Y-%m', sale_date) AS month, SUM(amount) AS total FROM sales GROUP BY month) SELECT month, total, LAG(total) OVER (ORDER BY month) AS prev_total, ROUND((total - LAG(total) OVER (ORDER BY month)) * 100.0 / LAG(total) OVER (ORDER BY month), 1) AS pct_change FROM monthly ORDER BY month;",
+    hint:'(total - prev) * 100.0 / prev gives the percentage change. Wrap in ROUND(...,1).',
+    validate: r => r.length > 0 },
+
+  { id:36, phase:4, week:12, title:'Full analyst dashboard query', diff:'hard', topic:'Analytics',
+    desc:'In one query: for each region, show total sales, top month by sales, and number of sales reps.',
+    tables:['sales','employees'],
+    starter:'WITH reg_stats AS (\n  SELECT region, SUM(amount) AS total, COUNT(DISTINCT employee_id) AS reps\n  FROM sales GROUP BY region\n),\nbest_month AS (\n  SELECT region,\n    strftime(\'%Y-%m\', sale_date) AS month,\n    SUM(amount) AS month_total,\n    RANK() OVER (PARTITION BY region ORDER BY SUM(amount) DESC) AS rk\n  FROM sales GROUP BY region, month\n)\nSELECT ',
+    solution:"WITH reg_stats AS (SELECT region, SUM(amount) AS total, COUNT(DISTINCT employee_id) AS reps FROM sales GROUP BY region), best_month AS (SELECT region, strftime('%Y-%m', sale_date) AS month, SUM(amount) AS month_total, RANK() OVER (PARTITION BY region ORDER BY SUM(amount) DESC) AS rk FROM sales GROUP BY region, month) SELECT r.region, r.total, r.reps, b.month AS best_month, b.month_total FROM reg_stats r JOIN best_month b ON r.region = b.region WHERE b.rk = 1 ORDER BY r.total DESC;",
+    hint:'JOIN reg_stats r with best_month b ON r.region = b.region WHERE b.rk = 1.',
+    validate: r => r.length > 0 && r.every(x => x.hasOwnProperty('region') && x.hasOwnProperty('total')) },
+];
+
+const weekData = [
+  { w:1, phase:1, ph:'ph1', badge:'badge-ph1', label:'Foundations', title:'How databases work & first queries', time:'5–6h', topics:['What is a relational database — tables, rows, columns','Installing PostgreSQL or using DB Fiddle online','SELECT, FROM — retrieve every column and specific columns','WHERE — filter rows by condition','Comparison operators: =, !=, >, <, >=, <=','ORDER BY ASC / DESC','LIMIT — control how many rows come back'], del:'Write 10 queries on the Northwind sample database using SELECT, WHERE, ORDER BY.' },
+  { w:2, phase:1, ph:'ph1', badge:'badge-ph1', label:'Foundations', title:'Filtering, nulls & column logic', time:'5–6h', topics:['AND, OR, NOT — combining conditions','IN and BETWEEN — compact filtering','IS NULL / IS NOT NULL — handling missing data','COALESCE — replace nulls with a default','Column aliases with AS','String functions: UPPER, LOWER, LENGTH, TRIM','LIKE — pattern matching with % and _'], del:'20-query drill: answer 20 business questions on sample data. No peeking at syntax.' },
+  { w:3, phase:1, ph:'ph1', badge:'badge-ph1', label:'Foundations', title:'Aggregation & grouping', time:'6–7h', topics:['COUNT(*) vs COUNT(column) — the important difference','SUM, AVG, MIN, MAX','GROUP BY — aggregate per category','HAVING — filter groups after aggregation','Difference between WHERE and HAVING','Combining GROUP BY with ORDER BY','COUNT(DISTINCT col) — count unique values'], del:'Answer 10 business questions using GROUP BY: sales by region, orders per customer, etc.' },
+  { w:4, phase:1, ph:'ph1', badge:'badge-ph1', label:'Foundations', title:'Foundations review + first project', time:'6–7h', topics:['Review all weeks 1–3 concepts','Work through 15 LeetCode Easy SQL problems','Identify weak spots — re-drill them','Set up a GitHub account to save your work','Write a "top 10 customers by revenue" query from scratch','Write a "monthly sales trend" query','Document and comment your queries clearly'], del:'Solve all LeetCode SQL Easy problems. Push your query files to GitHub.' },
+  { w:5, phase:2, ph:'ph2', badge:'badge-ph2', label:'Core analyst', title:'JOINs — combining tables', time:'7–8h', topics:['Why data is split across tables (normalisation basics)','INNER JOIN — only matching rows','LEFT JOIN — all left rows, NULLs where no match','RIGHT JOIN — and when to avoid it','FULL OUTER JOIN — all rows from both sides','Joining on multiple columns','Chaining 3 or more tables together'], del:'Write 10 queries using JOINs: customers + orders, employees + sales, products + categories.' },
+  { w:6, phase:2, ph:'ph2', badge:'badge-ph2', label:'Core analyst', title:'CASE WHEN + date logic', time:'6–7h', topics:['CASE WHEN THEN ELSE END — conditional columns','Bucketing numeric values into categories','CASE inside aggregate functions (pivoting)','Date functions: YEAR, MONTH, DAY, DATEPART','DATEDIFF — days between two dates','DATEADD — shifting dates forward/back','Extracting week numbers and quarters'], del:'Build a customer segmentation query: bucket customers by spend into Low/Mid/High tiers.' },
+  { w:7, phase:2, ph:'ph2', badge:'badge-ph2', label:'Core analyst', title:'Subqueries & query structure', time:'7–8h', topics:['Subquery in WHERE — filter using another query','Subquery in FROM — use a query as a table','Subquery in SELECT — scalar subqueries','Correlated vs non-correlated subqueries','EXISTS and NOT EXISTS','When to prefer a JOIN over a subquery','Query execution order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY'], del:'Rewrite 5 JOIN queries using subqueries and vice versa. Compare readability.' },
+  { w:8, phase:2, ph:'ph2', badge:'badge-ph2', label:'Core analyst', title:'Core skills review + project', time:'7–8h', topics:['LeetCode Medium SQL — aim for 20 problems','Review: JOINs, CASE WHEN, subqueries','Practice explaining your queries out loud','Pick a public dataset (e.g. Kaggle NYC Taxi)','Write 8 business questions about the dataset','Answer them all in SQL','Push polished queries to GitHub with a README'], del:'Completed project #1 on GitHub: public dataset analysed with 8 SQL queries + writeup.' },
+  { w:9, phase:3, ph:'ph3', badge:'badge-ph3', label:'Advanced', title:'CTEs — clean multi-step queries', time:'8h', topics:['WITH clause syntax — writing your first CTE','Why CTEs beat nested subqueries for readability','Chaining multiple CTEs together','Recursive CTEs — traversing hierarchies','Refactor a complex query into CTEs step by step','Naming conventions for CTE clarity','When NOT to use CTEs (performance considerations)'], del:'Take 3 of your hardest queries from weeks 5–8 and rewrite them using CTEs.' },
+  { w:10, phase:3, ph:'ph3', badge:'badge-ph3', label:'Advanced', title:'Window functions', time:'8–9h', topics:['OVER() clause — what makes a window function','PARTITION BY — groups without collapsing rows','ROW_NUMBER, RANK, DENSE_RANK — row numbering','LAG and LEAD — compare with previous/next row','Running totals: SUM() OVER (ORDER BY date)','Moving averages: AVG() OVER (ROWS BETWEEN ...)','Top-N per group pattern — the classic interview question'], del:'Solve 10 window function problems on LeetCode and StrataScratch. Focus on top-N per group.' },
+  { w:11, phase:3, ph:'ph3', badge:'badge-ph3', label:'Advanced', title:'Performance, UNION & data modelling', time:'7–8h', topics:['UNION vs UNION ALL — and when each applies','SELF JOIN — comparing rows in the same table','EXPLAIN / query plan — reading what the DB does','What indexes are and why they speed queries up','Identifying slow queries and common causes','Star schema: fact tables vs dimension tables','Intro to data warehousing concepts (BigQuery / Snowflake)'], del:'Run EXPLAIN on 5 of your queries. Identify the slowest step and propose an index.' },
+  { w:12, phase:4, ph:'ph4', badge:'badge-ph4', label:'Job ready', title:'Interview prep + portfolio project', time:'8–10h', topics:['LeetCode Hard SQL — target 10 problems','StrataScratch: solve 5 real company interview questions','Practice live coding: write queries while explaining aloud','Build portfolio project #2 on a dataset you care about','Write a clean README with business context + findings','Polish GitHub: consistent formatting, comments, descriptions','Prepare answers to: "walk me through a complex query you wrote"'], del:'Portfolio live on GitHub: 2 projects, 15+ queries, clean READMEs. Apply to 3 analyst roles.' },
+];
+
+let db = null;
+let currentEx = null;
+let solvedIds = new Set(JSON.parse(localStorage.getItem('sqlcraft_solved')||'[]'));
+let doneWeeks = new Set(JSON.parse(localStorage.getItem('sqlcraft_weeks')||'[]'));
+let currentFilter = 'all';
+let openModalWeek = null;
+
+function saveSolved() { localStorage.setItem('sqlcraft_solved', JSON.stringify([...solvedIds])); }
+function saveWeeks() { localStorage.setItem('sqlcraft_weeks', JSON.stringify([...doneWeeks])); }
+
+async function initDB() {
+  const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${f}` });
+  db = new SQL.Database();
+  db.run(DB_SQL);
+}
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  const map = {home:0, curriculum:1, practice:2, cheatsheet:3, progress:4, contact:5};
+  const tabs = document.querySelectorAll('.nav-tab');
+  const dtabs = document.querySelectorAll('.drawer-tab');
+  if (map[name] !== undefined) {
+    if (tabs[map[name]]) tabs[map[name]].classList.add('active');
+    if (dtabs[map[name]]) dtabs[map[name]].classList.add('active');
+  }
+  if (name === 'curriculum') renderCurriculum();
+  if (name === 'progress') renderProgress();
+  if (name === 'cheatsheet') renderCheatSheet();
+  const footer = document.querySelector('.site-footer');
+  if (footer) footer.style.display = name === 'practice' ? 'none' : 'block';
+  window.scrollTo(0,0);
+  updateNav();
+}
+
+function toggleDrawer() {
+  const drawer = document.getElementById('nav-drawer');
+  const burger = document.getElementById('nav-hamburger');
+  const open = drawer.classList.toggle('open');
+  burger.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+function updateNav() {
+  document.getElementById('nav-solved').textContent = solvedIds.size;
+  const mob = document.getElementById('nav-solved-mobile');
+  if (mob) mob.textContent = solvedIds.size;
+}
+
+function renderCurriculum() {
+  const grid = document.getElementById('curriculum-grid');
+  grid.innerHTML = weekData.map(w => `
+    <div class="week-card ${w.ph} ${doneWeeks.has(w.w)?'solved':''}" onclick="openWeekModal(${w.w})">
+      ${doneWeeks.has(w.w)?'<div class="wc-done-badge">✓</div>':''}
+      <div class="wc-top">
+        <span class="wc-num">WEEK ${w.w}</span>
+        <span class="wc-badge ${w.badge}">${w.label}</span>
+      </div>
+      <div class="wc-title">${w.title}</div>
+      <div class="wc-meta">${w.time} · ${w.topics.length} topics</div>
+    </div>
+  `).join('');
+}
+
+function openWeekModal(wNum) {
+  const w = weekData.find(x => x.w === wNum);
+  openModalWeek = wNum;
+  document.getElementById('modal-week-num').textContent = `WEEK ${w.w} — ${w.label.toUpperCase()}`;
+  document.getElementById('modal-title').textContent = w.title;
+  document.getElementById('modal-topics').innerHTML = w.topics.map(t =>
+    `<div class="topic-row"><div class="topic-check"></div><span>${t}</span></div>`
+  ).join('');
+  document.getElementById('modal-deliverable').textContent = w.del;
+  document.getElementById('modal-mark-btn').textContent = doneWeeks.has(wNum) ? 'Mark incomplete' : 'Mark as done';
+  document.getElementById('week-modal').classList.add('open');
+}
+
+function toggleWeekDone() {
+  if (doneWeeks.has(openModalWeek)) doneWeeks.delete(openModalWeek);
+  else doneWeeks.add(openModalWeek);
+  saveWeeks();
+  document.getElementById('modal-mark-btn').textContent = doneWeeks.has(openModalWeek) ? 'Mark incomplete' : 'Mark as done';
+  renderCurriculum();
+  updateNav();
+}
+
+function closeModal() {
+  document.getElementById('week-modal').classList.remove('open');
+}
+
+function renderExerciseList(filter) {
+  const list = document.getElementById('exercise-list');
+  const filtered = filter === 'all' ? exercises : exercises.filter(e => e.diff === filter);
+  document.getElementById('ep-count').textContent = `${filtered.length} exercises`;
+  list.innerHTML = filtered.map(e => `
+    <div class="ex-item ${solvedIds.has(e.id)?'solved':''} ${currentEx&&currentEx.id===e.id?'active':''}" onclick="loadExercise(${e.id})">
+      <div class="ex-title">${e.title}</div>
+      <div class="ex-meta">
+        <div class="diff-dot diff-${e.diff}"></div>
+        <span class="diff-label">${e.diff}</span>
+        <span class="ex-topic">${e.topic}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterEx(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExerciseList(f);
+}
+
+function loadExercise(id) {
+  currentEx = exercises.find(e => e.id === id);
+  document.getElementById('problem-title').textContent = currentEx.title;
+  document.getElementById('problem-desc').textContent = currentEx.desc;
+  const schemaSection = document.getElementById('schema-section');
+  schemaSection.style.display = 'block';
+  const tablesDiv = document.getElementById('schema-tables');
+  tablesDiv.innerHTML = currentEx.tables.map(t => {
+    const info = SCHEMA_INFO[t];
+    return `<div class="schema-table">
+      <div class="st-name">${t}</div>
+      ${info.fields.map(f => {
+        const parts = f.split(' ');
+        return `<div class="st-field">${parts[0]} <span>${parts.slice(1).join(' ')}</span></div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+  const editor = document.getElementById('sql-editor');
+  editor.value = currentEx.starter || '';
+  document.getElementById('result-status').style.display = 'none';
+  document.getElementById('results-body').innerHTML = '<div class="empty-state">Run your query to see results</div>';
+  document.getElementById('hint-box').classList.remove('show');
+  updateLineNums();
+  renderExerciseList(currentFilter);
+  editor.focus();
+}
+
+function runQuery() {
+  if (!db) { document.getElementById('results-body').innerHTML = '<div class="empty-state" style="color:var(--amber)">Database loading... try again in a moment.</div>'; return; }
+  if (!currentEx) { document.getElementById('results-body').innerHTML = '<div class="empty-state">Select an exercise first.</div>'; return; }
+  const sql = document.getElementById('sql-editor').value.trim();
+  if (!sql) return;
+  const statusEl = document.getElementById('result-status');
+  const bodyEl = document.getElementById('results-body');
+  try {
+    const results = db.exec(sql);
+    if (!results.length) {
+      bodyEl.innerHTML = '<div class="empty-state">Query ran successfully. No rows returned.</div>';
+      statusEl.className = 'result-status status-success';
+      statusEl.textContent = 'OK';
+      statusEl.style.display = 'flex';
+      return;
+    }
+    const { columns, values } = results[0];
+    const rows = values.map(v => Object.fromEntries(columns.map((c, i) => [c, v[i]])));
+    const rowCountEl = document.getElementById('result-row-count');
+    if (rowCountEl) rowCountEl.textContent = rows.length + ' row' + (rows.length !== 1 ? 's' : '');
+    const isCorrect = currentEx.validate(rows);
+    if (isCorrect && !solvedIds.has(currentEx.id)) {
+      solvedIds.add(currentEx.id);
+      saveSolved();
+      updateNav();
+      renderExerciseList(currentFilter);
+    }
+    statusEl.className = 'result-status ' + (isCorrect ? 'status-correct' : 'status-wrong');
+    statusEl.textContent = isCorrect ? '✓ Correct!' : '✗ Not quite';
+    statusEl.style.display = 'flex';
+    bodyEl.innerHTML = `
+      <table class="results-table">
+        <thead><tr>${columns.map(c => `<th>${c}</th>`).join('')}</tr></thead>
+        <tbody>${rows.slice(0,50).map(r => `<tr>${columns.map(c => `<td>${r[c] === null ? '<span style="color:var(--faint)">NULL</span>' : r[c]}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+      ${rows.length > 50 ? `<div style="font-size:12px;color:var(--muted);padding:8px 12px">Showing 50 of ${rows.length} rows</div>` : ''}
+    `;
+  } catch (e) {
+    statusEl.className = 'result-status status-error';
+    statusEl.textContent = 'Error';
+    statusEl.style.display = 'flex';
+    bodyEl.innerHTML = `<div style="color:var(--red);font-family:var(--mono);font-size:13px;padding:12px">${e.message}</div>`;
+  }
+}
+
+function showHint() {
+  const box = document.getElementById('hint-box');
+  if (!currentEx) return;
+  box.textContent = currentEx.hint;
+  box.classList.toggle('show');
+}
+
+function resetEditor() {
+  if (!currentEx) return;
+  document.getElementById('sql-editor').value = currentEx.starter || '';
+  document.getElementById('hint-box').classList.remove('show');
+  document.getElementById('result-status').style.display = 'none';
+  document.getElementById('results-body').innerHTML = '<div class="empty-state">Run your query to see results</div>';
+  updateLineNums();
+}
+
+function updateLineNums() {
+  const editor = document.getElementById('sql-editor');
+  const lines = editor.value.split('\n').length;
+  document.getElementById('line-nums').textContent = Array.from({length: Math.max(lines, 20)}, (_, i) => i + 1).join('\n');
+}
+
+function renderProgress() {
+  const phase1 = exercises.filter(e=>e.phase===1);
+  const phase2 = exercises.filter(e=>e.phase===2);
+  const phase3 = exercises.filter(e=>e.phase===3);
+  const phase4 = exercises.filter(e=>e.phase===4);
+  const s1 = phase1.filter(e=>solvedIds.has(e.id)).length;
+  const s2 = phase2.filter(e=>solvedIds.has(e.id)).length;
+  const s3 = phase3.filter(e=>solvedIds.has(e.id)).length;
+  const s4 = phase4.filter(e=>solvedIds.has(e.id)).length;
+  const total = solvedIds.size;
+  document.getElementById('p-solved').textContent = total;
+  document.getElementById('p-weeks').textContent = doneWeeks.size;
+  document.getElementById('p-streak').textContent = total > 0 ? Math.min(total, 7) : 0;
+  document.getElementById('p-pct').textContent = Math.round(total / exercises.length * 100) + '%';
+  document.getElementById('pp1').textContent = `${s1} / ${phase1.length}`;
+  document.getElementById('pp2').textContent = `${s2} / ${phase2.length}`;
+  document.getElementById('pp3').textContent = `${s3} / ${phase3.length}`;
+  document.getElementById('pp4').textContent = `${s4} / ${phase4.length}`;
+  document.getElementById('pb1').style.width = Math.round(s1/phase1.length*100)+'%';
+  document.getElementById('pb2').style.width = Math.round(s2/phase2.length*100)+'%';
+  document.getElementById('pb3').style.width = Math.round(s3/phase3.length*100)+'%';
+  document.getElementById('pb4').style.width = Math.round(s4/phase4.length*100)+'%';
+  const grid = document.getElementById('streak-grid');
+  grid.innerHTML = Array.from({length:12},(_,i)=>{
+    const wNum = i+1;
+    const wExs = exercises.filter(e=>e.week===wNum);
+    const solvedInWeek = wExs.filter(e=>solvedIds.has(e.id)).length;
+    const cls = solvedInWeek === wExs.length ? 'done' : solvedInWeek > 0 ? 'partial' : '';
+    return `<div class="streak-dot ${cls}" title="Week ${wNum}: ${solvedInWeek}/${wExs.length} solved"></div>`;
+  }).join('');
+}
+
+document.getElementById('sql-editor').addEventListener('input', updateLineNums);
+document.getElementById('sql-editor').addEventListener('scroll', function() {
+  document.getElementById('line-nums').scrollTop = this.scrollTop;
+});
+document.getElementById('sql-editor').addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = this.selectionStart, end = this.selectionEnd;
+    this.value = this.value.substring(0,s) + '  ' + this.value.substring(end);
+    this.selectionStart = this.selectionEnd = s + 2;
+    updateLineNums();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runQuery(); }
+});
+
+renderExerciseList('all');
+updateNav();
+initDB();
+function submitContact() {
+  const name = document.getElementById('cf-name').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const type = document.getElementById('cf-type').value;
+  const msg = document.getElementById('cf-msg').value.trim();
+
+  if (!name) { document.getElementById('cf-name').focus(); return; }
+  if (!email || !email.includes('@')) { document.getElementById('cf-email').focus(); return; }
+  if (!msg) { document.getElementById('cf-msg').focus(); return; }
+
+  const btn = document.getElementById('cf-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Sending...';
+
+  const subject = encodeURIComponent('[SQLCraft] ' + (type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Message') + ' from ' + name);
+  const body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nTopic: ' + (type || 'General') + '\n\n' + msg);
+  const mailtoUrl = 'mailto:salaipome@gmail.com?subject=' + subject + '&body=' + body;
+
+  window.location.href = mailtoUrl;
+
+  setTimeout(() => {
+    document.getElementById('contact-form-wrap').style.display = 'none';
+    document.getElementById('contact-success').classList.add('show');
+  }, 800);
+}
+
+function resetContactForm() {
+  document.getElementById('cf-name').value = '';
+  document.getElementById('cf-email').value = '';
+  document.getElementById('cf-type').value = '';
+  document.getElementById('cf-msg').value = '';
+  document.getElementById('cf-submit').disabled = false;
+  document.getElementById('cf-submit').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send message';
+  document.getElementById('contact-form-wrap').style.display = 'block';
+  document.getElementById('contact-success').classList.remove('show');
+}
+
+
+function renderCheatSheet() {
+  const grid = document.getElementById('cheat-grid');
+  if (!grid || grid.innerHTML.trim()) return;
+
+  const cards = [
+    {
+      title: 'Query anatomy',
+      icon: '🗂',
+      color: 'var(--accent)',
+      groups: [
+        { label: 'Execution order (mental model)', tags: [
+          {t:'FROM / JOIN', c:'hl'},{t:'WHERE', c:'hl'},{t:'GROUP BY', c:'hl'},
+          {t:'HAVING', c:'hl'},{t:'SELECT', c:'hl'},{t:'ORDER BY', c:'hl'},{t:'LIMIT', c:'hl'}
+        ]},
+        { label: 'Filtering operators', tags: [
+          {t:'='},{t:'!='},{t:'>'},{t:'<'},{t:'>='},{t:'<='},{t:'AND'},{t:'OR'},{t:'NOT'},
+          {t:'IN (a,b,c)'},{t:'BETWEEN x AND y'},{t:'IS NULL'},{t:'IS NOT NULL'},{t:'LIKE'},{t:'ILIKE'}
+        ]},
+        { snippet: `<span class="kw">SELECT</span> name, salary
+<span class="kw">FROM</span>   employees
+<span class="kw">WHERE</span>  department = 'Sales'
+  <span class="kw">AND</span>  salary <span class="kw">BETWEEN</span> 60000 <span class="kw">AND</span> 90000
+<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>  10;` }
+      ]
+    },
+    {
+      title: 'Aggregate functions',
+      icon: '∑',
+      color: 'var(--green)',
+      groups: [
+        { label: 'Core aggregates', tags: [
+          {t:'COUNT(*)',c:'green'},{t:'COUNT(col)',c:'green'},{t:'COUNT(DISTINCT col)',c:'green'},
+          {t:'SUM(col)',c:'green'},{t:'AVG(col)',c:'green'},{t:'MIN(col)',c:'green'},{t:'MAX(col)',c:'green'}
+        ]},
+        { label: 'Used with', tags: [{t:'GROUP BY'},{t:'HAVING'},{t:'DISTINCT'},{t:'ROUND(n,2)'}]},
+        { label: 'Key difference', tip: 'COUNT(*) counts all rows including NULLs. COUNT(col) skips NULLs. Always clarify which you mean.' },
+        { snippet: `<span class="kw">SELECT</span> department,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> headcount,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(salary), 2) <span class="kw">AS</span> avg_sal,
+  <span class="fn">MAX</span>(salary) <span class="kw">AS</span> top_sal
+<span class="kw">FROM</span> employees
+<span class="kw">GROUP BY</span> department
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(*) > 2;` }
+      ]
+    },
+    {
+      title: 'String functions',
+      icon: 'Aa',
+      color: 'var(--amber)',
+      groups: [
+        { label: 'Manipulation', tags: [
+          {t:'CONCAT(a,b)',c:'amber'},{t:'UPPER(s)'},{t:'LOWER(s)'},{t:'LENGTH(s)'},
+          {t:'TRIM(s)'},{t:'LTRIM(s)'},{t:'RTRIM(s)'},{t:'REPLACE(s,old,new)'},
+          {t:'SUBSTRING(s,pos,len)'},{t:'LEFT(s,n)'},{t:'RIGHT(s,n)'},{t:'REVERSE(s)'}
+        ]},
+        { label: 'Pattern matching', tags: [
+          {t:"LIKE '%word%'"},{t:"LIKE 'a_c'"},{t:'ILIKE (case-insensitive)'},{t:'NOT LIKE'}
+        ]},
+        { snippet: `<span class="kw">SELECT</span>
+  <span class="fn">CONCAT</span>(first_name,' ',last_name) <span class="kw">AS</span> full_name,
+  <span class="fn">UPPER</span>(email),
+  <span class="fn">LENGTH</span>(phone) <span class="kw">AS</span> phone_len
+<span class="kw">FROM</span> customers
+<span class="kw">WHERE</span> email <span class="kw">LIKE</span> '%@gmail.com';` }
+      ]
+    },
+    {
+      title: 'Date functions',
+      icon: '📅',
+      color: 'var(--red)',
+      groups: [
+        { label: 'Extract parts', tags: [
+          {t:'YEAR(d)',c:'red'},{t:'MONTH(d)',c:'red'},{t:'DAY(d)',c:'red'},{t:'QUARTER(d)',c:'red'},
+          {t:'WEEK(d)'},{t:'DAYOFWEEK(d)'},{t:"DATE_FORMAT(d,'%Y-%m')"}
+        ]},
+        { label: 'Calculate', tags: [
+          {t:'DATEDIFF(a,b)'},{t:'DATE_ADD(d, INTERVAL n DAY)'},{t:'DATE_SUB(d, INTERVAL n MONTH)'},
+          {t:'NOW()'},{t:'CURDATE()'},{t:'DATE_TRUNC(part,d)'}
+        ]},
+        { snippet: `<span class="kw">SELECT</span>
+  <span class="fn">YEAR</span>(order_date) <span class="kw">AS</span> yr,
+  <span class="fn">MONTH</span>(order_date) <span class="kw">AS</span> mo,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> orders,
+  <span class="fn">DATEDIFF</span>(<span class="fn">NOW</span>(), order_date) <span class="kw">AS</span> days_ago
+<span class="kw">FROM</span> orders
+<span class="kw">GROUP BY</span> yr, mo
+<span class="kw">ORDER BY</span> yr <span class="kw">DESC</span>, mo <span class="kw">DESC</span>;` }
+      ]
+    },
+    {
+      title: 'JOINs',
+      icon: '⟵⟶',
+      color: 'var(--accent)',
+      groups: [
+        { label: 'Join types', tags: [
+          {t:'INNER JOIN',c:'hl'},{t:'LEFT JOIN',c:'hl'},{t:'RIGHT JOIN'},{t:'FULL OUTER JOIN'},
+          {t:'CROSS JOIN'},{t:'SELF JOIN'}
+        ]},
+        { label: 'Common patterns', tags: [
+          {t:'ON a.id = b.a_id'},{t:'ON a.x = b.x AND a.y = b.y'},{t:'WHERE b.id IS NULL  ← anti-join'}
+        ]},
+        { label: 'Mental model', tip: 'LEFT JOIN = keep ALL left rows, fill right with NULL where no match. Use WHERE right.id IS NULL to find unmatched rows.' },
+        { snippet: `<span class="cm">-- customers with no orders (anti-join)</span>
+<span class="kw">SELECT</span> c.name
+<span class="kw">FROM</span>   customers c
+<span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> c.id = o.customer_id
+<span class="kw">WHERE</span>  o.id <span class="kw">IS NULL</span>;` }
+      ]
+    },
+    {
+      title: 'CASE WHEN',
+      icon: 'if',
+      color: 'var(--amber)',
+      groups: [
+        { label: 'Syntax', tags: [
+          {t:'CASE WHEN ... THEN ...',c:'amber'},{t:'ELSE ...'},{t:'END'},{t:'END AS alias'}
+        ]},
+        { label: 'Use cases', tags: [
+          {t:'Bucket values'},{t:'Conditional aggregate'},{t:'Flag rows'},{t:'Replace NULLs'}
+        ]},
+        { snippet: `<span class="kw">SELECT</span> name, salary,
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> salary < 70000 <span class="kw">THEN</span> 'Junior'
+    <span class="kw">WHEN</span> salary < 95000 <span class="kw">THEN</span> 'Mid'
+    <span class="kw">ELSE</span> 'Senior'
+  <span class="kw">END</span> <span class="kw">AS</span> band,
+  <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> status='won' <span class="kw">THEN</span> 1 <span class="kw">ELSE</span> 0 <span class="kw">END</span>) <span class="kw">AS</span> wins
+<span class="kw">FROM</span> employees;` }
+      ]
+    },
+    {
+      title: 'Subqueries',
+      icon: '{ }',
+      color: 'var(--green)',
+      groups: [
+        { label: 'Where to nest', tags: [
+          {t:'IN WHERE clause',c:'green'},{t:'IN FROM (inline view)'},{t:'IN SELECT (scalar)'}
+        ]},
+        { label: 'Correlated vs independent', tip: 'Independent: runs once. Correlated: re-runs for every row in the outer query — use with care on large tables.' },
+        { snippet: `<span class="cm">-- correlated: sales above that region avg</span>
+<span class="kw">SELECT</span> region, amount
+<span class="kw">FROM</span>   sales s1
+<span class="kw">WHERE</span>  amount > (
+  <span class="kw">SELECT</span> <span class="fn">AVG</span>(amount)
+  <span class="kw">FROM</span>   sales s2
+  <span class="kw">WHERE</span>  s2.region = s1.region
+);` }
+      ]
+    },
+    {
+      title: 'CTEs',
+      icon: 'WITH',
+      color: 'var(--accent)',
+      groups: [
+        { label: 'Why CTEs beat nested subqueries', tip: 'Named, readable, reusable in the same query. Debug one CTE at a time by running it in isolation.' },
+        { label: 'Key patterns', tags: [
+          {t:'WITH name AS (...)',c:'hl'},{t:'Chain multiple CTEs'},{t:'Reference CTE like a table'},{t:'Recursive CTE (hierarchies)'}
+        ]},
+        { snippet: `<span class="kw">WITH</span> monthly <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="fn">DATE_TRUNC</span>('month', sale_date) <span class="kw">AS</span> mo,
+         <span class="fn">SUM</span>(amount) <span class="kw">AS</span> total
+  <span class="kw">FROM</span>   sales
+  <span class="kw">GROUP BY</span> mo
+),
+ranked <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *, <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> total <span class="kw">DESC</span>) <span class="kw">AS</span> rk
+  <span class="kw">FROM</span>   monthly
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> ranked <span class="kw">WHERE</span> rk <= 3;` }
+      ]
+    },
+    {
+      title: 'Window functions',
+      icon: '⊞',
+      color: 'var(--red)',
+      groups: [
+        { label: 'Ranking', tags: [
+          {t:'ROW_NUMBER()',c:'red'},{t:'RANK()'},{t:'DENSE_RANK()'},{t:'NTILE(n)'}
+        ]},
+        { label: 'Value access', tags: [
+          {t:'LAG(col, n)'},{t:'LEAD(col, n)'},{t:'FIRST_VALUE(col)'},{t:'LAST_VALUE(col)'}
+        ]},
+        { label: 'Aggregates over window', tags: [
+          {t:'SUM() OVER (...)'},{t:'AVG() OVER (...)'},{t:'COUNT() OVER (...)'}
+        ]},
+        { snippet: `<span class="cm">-- top sale per region + running total</span>
+<span class="kw">SELECT</span> region, amount, sale_date,
+  <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> region
+    <span class="kw">ORDER BY</span> amount <span class="kw">DESC</span>
+  ) <span class="kw">AS</span> rnk,
+  <span class="fn">SUM</span>(amount) <span class="kw">OVER</span> (
+    <span class="kw">ORDER BY</span> sale_date
+  ) <span class="kw">AS</span> running_total
+<span class="kw">FROM</span> sales;` }
+      ]
+    },
+    {
+      title: 'Cleaning & NULLs',
+      icon: '✦',
+      color: 'var(--green)',
+      groups: [
+        { label: 'NULL handling', tags: [
+          {t:'COALESCE(a,b,c)',c:'green'},{t:'IFNULL(val,default)'},{t:'NULLIF(a,b)'},
+          {t:'IS NULL'},{t:'IS NOT NULL'}
+        ]},
+        { label: 'Type casting', tags: [
+          {t:'CAST(col AS INT)'},{t:'CAST(col AS DECIMAL(10,2))'},{t:'CAST(col AS VARCHAR)'}
+        ]},
+        { label: 'Set operations', tags: [
+          {t:'UNION ALL'},{t:'UNION (deduped)'},{t:'INTERSECT'},{t:'EXCEPT / MINUS'}
+        ]},
+        { snippet: `<span class="cm">-- safe division, replace NULL with 0</span>
+<span class="kw">SELECT</span>
+  <span class="fn">COALESCE</span>(revenue, 0) <span class="kw">AS</span> revenue,
+  <span class="fn">NULLIF</span>(target, 0) <span class="kw">AS</span> safe_target,
+  revenue / <span class="fn">NULLIF</span>(target, 0) <span class="kw">AS</span> attainment
+<span class="kw">FROM</span> performance;` }
+      ]
+    },
+    {
+      title: 'Performance tips',
+      icon: '⚡',
+      color: 'var(--amber)',
+      groups: [
+        { label: 'What slows queries down', tags: [
+          {t:'SELECT * on large tables',c:'red'},{t:'No index on JOIN/WHERE cols',c:'red'},
+          {t:'Correlated subquery on big table',c:'red'},{t:'Functions on indexed columns',c:'red'}
+        ]},
+        { label: 'What speeds them up', tags: [
+          {t:'SELECT only needed cols',c:'green'},{t:'Filter early with WHERE',c:'green'},
+          {t:'Index JOIN and WHERE columns',c:'green'},{t:'Use CTEs to cache results',c:'green'}
+        ]},
+        { label: 'Diagnose with', tags: [
+          {t:'EXPLAIN'},{t:'EXPLAIN ANALYZE'},{t:'Query plan (Seq Scan vs Index Scan)'}
+        ]}
+      ]
+    },
+    {
+      title: 'Advanced patterns',
+      icon: '🧠',
+      color: 'var(--accent)',
+      groups: [
+        { label: 'Must-know interview patterns', tags: [
+          {t:'Top N per group',c:'hl'},{t:'Running total'},{t:'Month-over-month change'},
+          {t:'Retention cohort'},{t:'Self join comparison'},{t:'Pivot with CASE WHEN'},
+          {t:'Cumulative distribution'},{t:'Gap & island detection'}
+        ]},
+        { snippet: `<span class="cm">-- top N per group (classic interview Q)</span>
+<span class="kw">WITH</span> ranked <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> *,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+      <span class="kw">PARTITION BY</span> category
+      <span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> products
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> ranked <span class="kw">WHERE</span> rn <= 3;` }
+      ]
+    },
+  ];
+
+  grid.innerHTML = cards.map(card => {
+    const bodyHtml = card.groups.map(g => {
+      let html = '<div class="cheat-group">';
+      if (g.label) html += `<div class="cheat-group-label">${g.label}</div>`;
+      if (g.tags) {
+        html += '<div class="cheat-items">';
+        html += g.tags.map(t => `<span class="cheat-tag${t.c?' '+t.c:''}">${t.t}</span>`).join('');
+        html += '</div>';
+      }
+      if (g.tip) html += `<div class="cheat-tip">${g.tip}</div>`;
+      if (g.snippet) {
+        const escaped = g.snippet;
+        html += `<pre class="cheat-snippet">${escaped}</pre>`;
+        html += `<button class="cheat-copy-btn" onclick="copySnippet(this)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy
+        </button>`;
+      }
+      html += '</div>';
+      return html;
+    }).join('');
+
+    return `<div class="cheat-card">
+      <div class="cheat-card-head">
+        <div class="cheat-icon" style="background:rgba(255,255,255,0.05);color:${card.color};font-family:var(--mono);font-size:14px;font-weight:700">${card.icon}</div>
+        <div class="cheat-card-title" style="color:${card.color}">${card.title}</div>
+      </div>
+      <div class="cheat-card-body">${bodyHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function copySnippet(btn) {
+  const pre = btn.previousElementSibling;
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy';
+    }, 1500);
+  });
+}
+
+
+// ── Drag-to-resize splitter ──────────────────────────────────────────────────
+(function() {
+  let isDragging = false;
+  let startY = 0;
+  let startEditorH = 0;
+  let startResultsH = 0;
+  const MIN_EDITOR_H = 80;
+  const MIN_RESULTS_H = 60;
+
+  function initSplitter() {
+    const divider  = document.getElementById('drag-divider');
+    const codeSection = document.getElementById('code-section');
+    const resultPane  = document.getElementById('results-pane');
+    const container   = document.querySelector('.editor-results-container');
+    if (!divider || !codeSection || !resultPane) return;
+
+    // Set initial pixel heights from natural layout
+    function setInitialHeights() {
+      const totalH = container.clientHeight - divider.offsetHeight;
+      const editorH = Math.round(totalH * 0.58);
+      const resultsH = totalH - editorH;
+      codeSection.style.flex = 'none';
+      codeSection.style.height = editorH + 'px';
+      resultPane.style.flex = 'none';
+      resultPane.style.height = resultsH + 'px';
+    }
+    setInitialHeights();
+
+    // Mouse
+    divider.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isDragging = true;
+      startY = e.clientY;
+      startEditorH = codeSection.offsetHeight;
+      startResultsH = resultPane.offsetHeight;
+      divider.classList.add('dragging');
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      const dy = e.clientY - startY;
+      let newEditorH = startEditorH + dy;
+      let newResultsH = startResultsH - dy;
+      if (newEditorH < MIN_EDITOR_H) {
+        newEditorH = MIN_EDITOR_H;
+        newResultsH = startEditorH + startResultsH - MIN_EDITOR_H;
+      }
+      if (newResultsH < MIN_RESULTS_H) {
+        newResultsH = MIN_RESULTS_H;
+        newEditorH = startEditorH + startResultsH - MIN_RESULTS_H;
+      }
+      codeSection.style.height = newEditorH + 'px';
+      resultPane.style.height = newResultsH + 'px';
+      // sync line numbers scroll
+      const editor = document.getElementById('sql-editor');
+      if (editor) {
+        const ln = document.getElementById('line-nums');
+        if (ln) ln.scrollTop = editor.scrollTop;
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      divider.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    });
+
+    // Touch support
+    divider.addEventListener('touchstart', function(e) {
+      const t = e.touches[0];
+      isDragging = true;
+      startY = t.clientY;
+      startEditorH = codeSection.offsetHeight;
+      startResultsH = resultPane.offsetHeight;
+      divider.classList.add('dragging');
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      const t = e.touches[0];
+      const dy = t.clientY - startY;
+      let newEditorH = startEditorH + dy;
+      let newResultsH = startResultsH - dy;
+      if (newEditorH < MIN_EDITOR_H) { newEditorH = MIN_EDITOR_H; newResultsH = startEditorH + startResultsH - MIN_EDITOR_H; }
+      if (newResultsH < MIN_RESULTS_H) { newResultsH = MIN_RESULTS_H; newEditorH = startEditorH + startResultsH - MIN_RESULTS_H; }
+      codeSection.style.height = newEditorH + 'px';
+      resultPane.style.height = newResultsH + 'px';
+    }, { passive: true });
+
+    document.addEventListener('touchend', function() {
+      isDragging = false;
+      divider.classList.remove('dragging');
+    });
+
+    // Double-click divider: reset to 58/42 split
+    divider.addEventListener('dblclick', function() {
+      const totalH = container.clientHeight - divider.offsetHeight;
+      const editorH = Math.round(totalH * 0.58);
+      const resultsH = totalH - editorH;
+      codeSection.style.height = editorH + 'px';
+      resultPane.style.height = resultsH + 'px';
+    });
+
+    // Re-init on window resize
+    window.addEventListener('resize', function() {
+      const totalH = container.clientHeight - divider.offsetHeight;
+      const currentEditorH = codeSection.offsetHeight;
+      const currentResultsH = resultPane.offsetHeight;
+      const currentTotal = currentEditorH + currentResultsH;
+      if (currentTotal > 0) {
+        const ratio = currentEditorH / currentTotal;
+        codeSection.style.height = Math.round(totalH * ratio) + 'px';
+        resultPane.style.height = Math.round(totalH * (1 - ratio)) + 'px';
+      }
+    });
+  }
+
+  // Init after page is shown (practice page may not be visible on load)
+  const origShowPage = window.showPage;
+  window.showPage = function(name) {
+    origShowPage(name);
+    if (name === 'practice') {
+      requestAnimationFrame(function() {
+        const divider = document.getElementById('drag-divider');
+        const codeSection = document.getElementById('code-section');
+        if (divider && codeSection && !codeSection.style.height) {
+          initSplitter();
+        }
+      });
+    }
+  };
+
+  // Also init if practice is already visible on load
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('page-practice').classList.contains('active')) {
+      initSplitter();
+    }
+  });
+
+  // Expose for manual call
+  window._initSplitter = initSplitter;
+})();
+
+</script>
+
+
+
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">SQL<span>Craft</span></div>
+    <div class="footer-tagline">A free SQL practice platform for aspiring data analysts. Built with love by Salaipome.</div>
+
+    <div class="footer-socials">
+      <a class="social-link" href="https://www.linkedin.com/in/salaihang/" target="_blank" rel="noopener" title="LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a class="social-link" href="https://www.facebook.com/salaipome/" target="_blank" rel="noopener" title="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+      <a class="social-link" href="https://www.instagram.com/salaipome/" target="_blank" rel="noopener" title="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <a class="social-link" href="https://www.youtube.com/@salaipome" target="_blank" rel="noopener" title="YouTube">
+        <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+    </div>
+
+    <a class="footer-bmc" href="https://buymeacoffee.com/salaipome" target="_blank" rel="noopener">
+      ☕ Buy me a coffee
+    </a>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-bottom">
+      <span>&#169; 2025 SQLCraft by <a href="https://linktr.ee/salaipome" target="_blank" rel="noopener">Salaipome</a>. Free to use and share.</span>
+      <span>Built for aspiring data analysts worldwide.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
