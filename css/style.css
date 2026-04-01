@@ -669,5 +669,6 @@ nav {
 /* ── Sticky footer ── */
 html { height: 100%; }
 body { min-height: 100%; display: flex; flex-direction: column; }
-body > nav ~ .page.active { flex: 1; }
+.page.active { flex: 1; }
+#page-practice.page.active { flex: none; height: calc(100vh - 56px); overflow: hidden; }
 .site-footer { margin-top: auto; }
